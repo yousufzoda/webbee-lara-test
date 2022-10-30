@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Workshop;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -182,6 +183,14 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        $start = Workshop::first()->start;
+        $events = Event::with('workshops')
+            ->whereHas('workshops',function ($q) use ($start) {
+                $q->where('start','>', $start);
+            })->get();
+
+        if (!$events)
+            throw new \Exception('implement in coding task 2');
+        return response()->json($events);
     }
 }
